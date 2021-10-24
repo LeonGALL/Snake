@@ -47,3 +47,5 @@ Si une des trois contraintes suivantes n'est plus respectée, la partie est term
 - Le serpent ne doit pas rencontrer une partie de son propre corps.
 
 Le score est alors affiché dans la console.
+
+@@include[TAF.md](TAF.md)
