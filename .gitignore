@@ -6,3 +6,4 @@
 *.out
 *.toc
 .DS_Store
+*.tar.gz

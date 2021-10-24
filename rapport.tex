@@ -1,6 +1,5 @@
-\documentclass[A4]{article}
+\documentclass[a4paper]{article}
  
-\usepackage{pdfpages}
 \usepackage{fullpage}
 \usepackage{titlesec}
 \usepackage[utf8]{inputenc}
@@ -8,18 +7,54 @@
 \usepackage[french]{babel}
 \usepackage[autolanguage]{numprint}
 \usepackage{hyperref}
+\usepackage[a4paper]{geometry}
 
  
-\title{Snake} % AJOUTER LE TITRE ADEQUAT
-\date{5 décembre 2021} % VERIFIER LA DATE
-\author{BEAUREPERE Mathias \and GALL Léon}
+\title{Architecture des ordinateurs\\\large Projet : Jeu du Snake}
+\author{BEAUREPERE Mathias, GALL Léon}
+\date{}
  
 \hypersetup{
-   pdftitle={Snake},
-   pdfauthor={BEAUREPERE Mathias,GALL Léon},
+  pdftitle={Snake},
+  pdfauthor={BEAUREPERE Mathias,GALL Léon},
 }
- 
+\geometry{
+ a4paper,
+ left=15mm,
+ top=10mm,
+ right=15mm,
+ bottom=20mm,
+ }
+
+\makeatletter
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%                                                                         %
+%                                 DOCUMENT                                %
+%                                                                         %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 \begin{document}
-\maketitle
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%                                 HEADER                                  %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\hspace{-0.5cm}\begin{minipage}{0.5\textwidth}
+Université de Strasbourg\\
+UFR de mathématique et d'informatique
+\end{minipage}
+\hspace*{\fill}\begin{minipage}{0.5\textwidth}
+\hspace*{\fill}L2, Semestre 3, Automne 2021\\
+\hspace*{\fill}\@author
+\end{minipage}
+\\
+\begin{center}
+  \huge \@title
+\end{center}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%                                 RAPPORT                                 %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+%  ...
 
 \end{document}
