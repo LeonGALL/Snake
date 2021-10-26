@@ -17,7 +17,7 @@ Ce projet est à rendre avant le **5 décembre 2021 à 23h59**.
 
 ## Exécution
 
-L'émulateur Mars se lance à partir de l’archive javaMars4\_5.jar grâce à la commande `java -jar Mars4_5.jar`. Pour lancer votre programme, vous devez charger votre fichier snake.asm. Ensuite, vous devez activer l’affichage et la capture des entrées claviers en allant dans l’onglet Tools pour lancer _Bitmap Display & Keyboard_ ainsi que _Display MMIO Simulator_. Dans l’outil _BitMap Display_, vous devez sélectionner une fenêtre carrée 256x256 et une taille de pixel 16x16. Ne pas oublier de connecter les deux widgets à votre code MIPS. Finalement, il ne vous reste plus qu’à lancer l’exécution votre programme et interagir grâce aux entrées claviers.
+L'émulateur Mars se lance à partir de l’archive _javaMars4\_5.jar_ grâce à la commande `java -jar Mars4_5.jar`. Pour lancer votre programme, vous devez charger votre fichier snake.asm. Ensuite, vous devez activer l’affichage et la capture des entrées claviers en allant dans l’onglet Tools pour lancer _Bitmap Display & Keyboard_ ainsi que _Display MMIO Simulator_. Dans l’outil _BitMap Display_, vous devez sélectionner une fenêtre carrée 256x256 et une taille de pixel 16x16. Ne pas oublier de connecter les deux widgets à votre code MIPS. Finalement, il ne vous reste plus qu’à lancer l’exécution votre programme et interagir grâce aux entrées claviers.
 
 ## Déroulement du jeu
 
@@ -89,16 +89,27 @@ Pour archiver les fichiers on pourra utiliser la commande bash suivante :
 ```bash
 tar -cvzf Beaurepere_Gall.tar.gz snake.asm rapport.pdf
 ```
+
 Ou encore :
+
 ```bash
 make dist
 ```
 
 Pour générer le pdf à partir de LaTeX, on pourra utiliser :
+
 ```bash
 make latex
 ```
+
 Ou encore :
-```bash 
+
+```bash
 make
+```
+
+Pour supprimer les artefact :
+
+```bash
+make clean
 ```
