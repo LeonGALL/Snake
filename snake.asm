@@ -487,9 +487,16 @@ scoreJeu:      .word 0         # Score obtenu par le joueur
 ################################################################################
 
 majDirection:
-
-# En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
-
+li $t0,4 
+beq $a0,$t0,endMD # On regarde si il y a eu une erreur dans getInputVal
+# On vérifie DirectionDemandée != ((DirectionActuelle + 2) modulo 4) pour s'assurer que le serpent ne fait pas de demi-tour.
+lw $t1,snakeDir   # On récupère la direction précédente dans $t1
+addi $t2,$t1,2    # $t2 = $t1 + 2
+divu $t2,$t0      # On applique la division entière de $t1 par 4 (stocké dans $t0)
+mfhi $t2          # On récupère le reste de cette division entière dans $t1
+beq $a0,$t2,endMD # On vérifie que ce n'est pas un demi-tour
+sw $a0,snakeDir   # On met à jour la direction du serpent
+endMD:
 jr $ra
 
 ############################### updateGameStatus ###############################
@@ -497,7 +504,7 @@ jr $ra
 # Retour: Aucun
 # Effet de bord: L'état du jeu est mis à jour d'un pas de temps. Il faut donc :
 #                  - Faire bouger le serpent
-#                  - Tester si le serpent à manger le bonbon
+#                  - Tester si le serpent a mangé le bonbon
 #                    - Si oui déplacer le bonbon et ajouter un nouvel obstacle
 ################################################################################
 
