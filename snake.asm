@@ -573,7 +573,7 @@ la $t0,candy              # On récupère l'adresse du bonbon
 lw $t2,0($t0)
 bne $t3,$t2,end_UGS       # On compare la position de la tête à la position du bonbon (en X) si différent, on va à la fin
 lw $t2,4($t0)
-bne $t4,$t2,end_UGS    # On compare la position de la tête à la position du bonbon (en Y) si différent, on va à la fin
+bne $t4,$t2,end_UGS       # On compare la position de la tête à la position du bonbon (en Y) si différent, on va à la fin
 
 addi $t1,$t1,1            # On incrémente la taille du serpent ($t1 = taille du serpent)
 sw $t1,tailleSnake        
@@ -617,9 +617,9 @@ conditionFinJeu:
     lw $t0, snakePosX
     lw $t1, snakePosY
     lw $t2, tailleGrille
-    bgt $t0, $t2, endCFJtest
+    bge $t0, $t2, endCFJtest ### BGE
     blt $t0, $zero, endCFJtest
-    bgt $t1, $t2, endCFJtest
+    bge $t1, $t2, endCFJtest ### BGE
     blt $t1, $zero, endCFJtest
 
     li $t2, 0
@@ -630,36 +630,37 @@ CFJloop1:
     mul $t4, $t3, $t2
     la $t5, obstaclesPosX
     add $t6, $t4, $t5
+    lw $t6,0($t6) ###### <----
     beq $t0, $t6, endCFJtest
     la $t5, obstaclesPosY
     add $t6, $t4, $t5
+    lw $t6,0($t6) ###### <----
     beq $t1, $t6, endCFJtest
     addi $t2, $t2, 1
     j CFJloop1
 endCFJloop1:
-    li $t2, 0
+    li $t2, 1 #### SINON TU AS LA TÊTE = LA TÊTE
     lw $t7, tailleSnake
 CFJloop2:
     bge $t2, $t7, endCFJloop2
     mul $t4, $t3, $t2
     la $t5, snakePosX
     add $t6, $t4, $t5
+    lw $t6,0($t6) ###### <----
     beq $t0, $t6, endCFJtest
     la $t5, snakePosY
     add $t6, $t4, $t5
+    lw $t6,0($t6) ###### <----
     beq $t1, $t6, endCFJtest
     addi $t2, $t2, 1
     j CFJloop2
 endCFJtest:
     li $v0, 1
-
-endCFJloop2:
     jr $ra
 
-# Aide: Remplacer cette instruction permet d'avancer dans le projet.
-li $v0 0
-
-jr $ra
+endCFJloop2:
+    li $v0,0 ### <------
+    jr $ra
 
 ############################### affichageFinJeu ################################
 # Paramètres: Aucun
