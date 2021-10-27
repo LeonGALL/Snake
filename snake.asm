@@ -550,19 +550,19 @@ li $t2,2
 beq $t0,$t2,UGS_bas       # Cas direction = bas
                           # Sinon cas direction = gauche
 UGS_gauche:
-addi $t3,$t3,-1           # Tête en X -= 1
+addi $t4,$t4,-1           # Tête en Y -= 1
 j endNP_UGS
 
 UGS_haut:
-addi $t4,$t4,1            # Tête en Y += 1
-j endNP_UGS
-
-UGS_droite:
 addi $t3,$t3,1            # Tête en X += 1
 j endNP_UGS
 
+UGS_droite:
+addi $t4,$t4,1            # Tête en Y += 1
+j endNP_UGS
+
 UGS_bas:
-addi $t4,$t4,-1           # Tête en Y -= 1
+addi $t3,$t3,-1           # Tête en X -= 1
 
 endNP_UGS:
 sw $t3,snakePosX          # On change la position de la tête en X suivant le calcul précédent
