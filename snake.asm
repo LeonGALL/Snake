@@ -488,14 +488,19 @@ scoreJeu:      .word 0         # Score obtenu par le joueur
 
 majDirection:
 li $t0,4 
-beq $a0,$t0,endMD # On regarde si il y a eu une erreur dans getInputVal
+# On regarde si il y a eu une erreur dans getInputVal
+beq $a0,$t0,endMD 
+
 # On vérifie DirectionDemandée != ((DirectionActuelle + 2) modulo 4) pour s'assurer que le serpent ne fait pas de demi-tour.
 lw $t1,snakeDir   # On récupère la direction précédente dans $t1
 addi $t2,$t1,2    # $t2 = $t1 + 2
 divu $t2,$t0      # On applique la division entière de $t1 par 4 (stocké dans $t0)
 mfhi $t2          # On récupère le reste de cette division entière dans $t1
 beq $a0,$t2,endMD # On vérifie que ce n'est pas un demi-tour
-sw $a0,snakeDir   # On met à jour la direction du serpent
+
+# On met à jour la direction du serpent
+sw $a0,snakeDir
+
 endMD:
 jr $ra
 
@@ -509,10 +514,99 @@ jr $ra
 ################################################################################
 
 updateGameStatus:
+# Sauvegarde de $ra
+addi $sp,$sp,-4
+sw $ra,0($sp)
+# Décalage des positions du serpent d'une case du tableau
+li $t0,0
+lw $t1,tailleSnake        # $t1 = Taille du serpent
+la $t2,snakePosX          # $t2 = Adresse de la tête du serpent en X
+la $t3,snakePosY          # $t3 = Adresse de la tête du serpent en Y
+li $t4,4
+mul $t4,$t4,$t1           # On fait le calcul $t4 = 4*(taille du serpent)
+add $t2,$t2,$t4           # On se place à la fin du serpent en X ($t2 += longueur en octets du serpent)
+add $t3,$t3,$t4           # On se place à la fin du serpent en Y ($t3 += longueur en octets du serpent)
 
-# jal hiddenCheatFunctionDoingEverythingTheProjectDemandsWithoutHavingToWorkOnIt
+UGSLoop:                  # On va parcourir à l'envers le serpent
+bge $t0,$t1,end_UGSLoop   # Si tout est parcouru, fin de la boucle
+lw $t4,-4($t2)            # On charge la valeur en X d'une partie du serpent
+sw $t4,0($t2)             # On l'écrit dans la case suivante
+addi $t2,$t2,-4           # On décrémente la position du serpent en X
+lw $t4,-4($t3)            # On charge la valeur en Y d'une partie du serpent
+sw $t4,0($t3)             # On l'écrit dans la case suivante
+addi $t3,$t3,-4           # On décrémente la position du serpent en Y
+addi $t0,$t0,1            # On incrémente l'index
+j UGSLoop
+end_UGSLoop:
 
-jr $ra
+# Calcul de la nouvelle position de la tête
+lw $t0,snakeDir           # $t0 = Direction du serpent
+lw $t3,snakePosX          # $t3 = Adresse de la tête du serpent en X
+lw $t4,snakePosY          # $t4 = Adresse de la tête du serpent en Y
+beq $t0,$zero,UGS_haut    # Cas direction = haut
+li $t2,1
+beq $t0,$t2,UGS_droite    # Cas direction = droit
+li $t2,2
+beq $t0,$t2,UGS_bas       # Cas direction = bas
+                          # Sinon cas direction = gauche
+UGS_gauche:
+addi $t3,$t3,-1           # Tête en X -= 1
+j endNP_UGS
+
+UGS_haut:
+addi $t4,$t4,1            # Tête en Y += 1
+j endNP_UGS
+
+UGS_droite:
+addi $t3,$t3,1            # Tête en X += 1
+j endNP_UGS
+
+UGS_bas:
+addi $t4,$t4,-1           # Tête en Y -= 1
+
+endNP_UGS:
+sw $t3,snakePosX          # On change la position de la tête en X suivant le calcul précédent
+sw $t4,snakePosY          # On change la position de la tête en Y suivant le calcul précédent
+
+# Candy
+la $t0,candy              # On récupère l'adresse du bonbon
+lw $t2,0($t0)
+bne $t3,$t2,end_UGS       # On compare la position de la tête à la position du bonbon (en X) si différent, on va à la fin
+lw $t2,4($t0)
+bne $t4,$t2,end_UGS    # On compare la position de la tête à la position du bonbon (en Y) si différent, on va à la fin
+
+addi $t1,$t1,1            # On incrémente la taille du serpent ($t1 = taille du serpent)
+sw $t1,tailleSnake        
+
+lw $t0,scoreJeu           # On incrémente le score
+addi $t0,$t0,1
+sw $t0,scoreJeu
+
+jal newRandomObjectPosition # On récupère des positions aléatoires inocupées pour y placer le nouveau bonbon
+la $t0,candy
+sw $v0,0($t0)               # On place la position aléatoire du bonbon en X
+sw $v1,4($t0)               # On place la position aléatoire du bonbon en Y
+
+jal newRandomObjectPosition # On récupère des positions aléatoires inocupées pour y placer le nouvel obstacle
+lw $t0,numObstacles         # On charge le nombre d'obstacles
+li $t1,4
+mul $t1,$t0,$t1             
+la $t2,obstaclesPosX        # On charge l'adresse du premier obstacle en X dans $t2
+add $t2,$t2,$t1             # On se place après le dernier obstacle en X
+sw $v0,0($t2)               # On écrit la postion du dernier obstacle en X
+la $t2,obstaclesPosY        # On charge l'adresse du premier obstacle en Y dans $t2
+add $t2,$t2,$t1             # On se place après le dernier obstacle en Y
+sw $v1,0($t2)               # On écrit la postion du dernier obstacle en Y
+
+addi $t0,$t0,1              # On incrémente le nombre d'obstacles
+sw $t0,numObstacles
+
+end_UGS:
+# Récupération de $ra
+lw $ra,0($sp)
+addi $sp,$sp,4
+jr $ra                      # Retour à la fonction appelante
+
 
 ############################### conditionFinJeu ################################
 # Paramètres: Aucun
