@@ -520,6 +520,47 @@ jr $ra
 ################################################################################
 
 conditionFinJeu:
+    lw $t0, snakePosX
+    lw $t1, snakePosY
+    lw $t2, tailleGrille
+    bgt $t0, $t2, endCFJtest
+    blt $t0, $zero, endCFJtest
+    bgt $t1, $t2, endCFJtest
+    blt $t1, $zero, endCFJtest
+
+    li $t2, 0
+    li $t3, 4
+    lw $t7, numObstacles
+CFJloop1:
+    bge $t2, $t7, endCFJloop1
+    mul $t4, $t3, $t2
+    la $t5, obstaclesPosX
+    add $t6, $t4, $t5
+    beq $t0, $t6, endCFJtest
+    la $t5, obstaclesPosY
+    add $t6, $t4, $t5
+    beq $t1, $t6, endCFJtest
+    addi $t2, $t2, 1
+    j CFJloop1
+endCFJloop1:
+    li $t2, 0
+    lw $t7, tailleSnake
+CFJloop2:
+    bge $t2, $t7, endCFJloop2
+    mul $t4, $t3, $t2
+    la $t5, snakePosX
+    add $t6, $t4, $t5
+    beq $t0, $t6, endCFJtest
+    la $t5, snakePosY
+    add $t6, $t4, $t5
+    beq $t1, $t6, endCFJtest
+    addi $t2, $t2, 1
+    j CFJloop2
+endCFJtest:
+    li $v0, 1
+
+endCFJloop2:
+    jr $ra
 
 # Aide: Remplacer cette instruction permet d'avancer dans le projet.
 li $v0 0
