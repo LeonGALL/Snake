@@ -58,7 +58,7 @@ Le score est alors affiché dans la console.
 
 ## Fonctionnalités à implémenter
 
-- [ ] Mise à jour de la position.
+- [x] Mise à jour de la position.
 - [ ] Mise à jour des structures de données :
   - [ ] serpent.
   - [ ] obstacle.
