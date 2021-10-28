@@ -473,6 +473,9 @@ obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
 candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
 
+scoreMessage: .asciiz "Votre score est : "
+endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"
+
 .text
 
 ################################# majDirection #################################
@@ -671,7 +674,13 @@ endCFJloop2:
 ################################################################################
 
 affichageFinJeu:
-
-# Fin.
-
+la $a0,scoreMessage
+li $v0,4
+syscall
+lw $a0,scoreJeu
+li $v0,1
+syscall
+la $a0,endGameMessage
+li $v0,4
+syscall
 jr $ra
