@@ -59,12 +59,12 @@ Le score est alors affiché dans la console.
 ## Fonctionnalités à implémenter
 
 - [x] Mise à jour de la position.
-- [ ] Mise à jour des structures de données :
-  - [ ] serpent.
-  - [ ] obstacle.
-  - [ ] nourriture.
+- [x] Mise à jour des structures de données :
+  - [x] serpent.
+  - [x] obstacle.
+  - [x] nourriture.
 - [ ] Détecter et programmer les conditions de fin de jeu.
-- [ ] Affichage de fin de partie avec le score.
+- [x] Affichage de fin de partie avec le score.
 
 ## Options
 
