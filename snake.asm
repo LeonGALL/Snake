@@ -473,8 +473,8 @@ obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
 candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
 
-scoreMessage: .asciiz "Votre score est : "
-endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"
+scoreMessage: .asciiz "Votre score est : "                        # Message d'introduction du score
+endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"  # Mot gentil
 
 .text
 
@@ -674,13 +674,13 @@ endCFJloop2:
 ################################################################################
 
 affichageFinJeu:
-la $a0,scoreMessage
+la $a0,scoreMessage     # On charge l'adresse du message du score
 li $v0,4
-syscall
-lw $a0,scoreJeu
+syscall                 # On affiche le message
+lw $a0,scoreJeu         # On charge le score
 li $v0,1
-syscall
-la $a0,endGameMessage
+syscall                 # On l'affiche
+la $a0,endGameMessage   # On charge l'adresse du message gentil
 li $v0,4
-syscall
-jr $ra
+syscall                 # On affiche le message
+jr $ra                  # Retour à la fonction appelante
