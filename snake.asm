@@ -473,7 +473,18 @@ obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
 candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
 
-scoreMessage: .asciiz "Votre score est : "                        # Message d'introduction du score
+printZero:     .word 32,  0,5,	0,6,	0,7,	0,8,	0,9,	0,10,	1,4,	1,11,	2,4,	2,11,	3,5,	3,6,	3,7,	3,8,	3,9,	3,10  # Affichage de 0 : TAILLE, Y,X,Y2,X2,...
+printUn:       .word 22,  0,7,	1,6,	2,5,	3,4,	3,5,	3,6,	3,7,	3,8,	3,9,	3,10,	3,11                                # Affichage de 1 : TAILLE, Y,X,Y2,X2,...
+printDeux:     .word 28,  0,5,	0,6,	0,10,	0,11,	1,4,	1,9,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,11              # Affichage de 2 : TAILLE, Y,X,Y2,X2,...
+printTrois:    .word 24,  0,4,	0,11,	1,4,	1,7,	1,11,	2,4,	2,6,	2,8,	2,10,	3,4,	3,5,	3,9                           # Affichage de 3 : TAILLE, Y,X,Y2,X2,...
+printQuatre:   .word 26,  0,6,	0,7,	1,5,	1,7,	2,4,	2,5,	2,6,	2,7,	2,8,	2,9,	2,10,	2,11,	3,7                     # Affichage de 4 : TAILLE, Y,X,Y2,X2,...
+printCinq:     .word 30,  0,4,	0,5,	0,6,	0,7,	0,11,	1,4,	1,7,	1,11,	2,4,	2,7,	2,11,	3,4,	3,8,	3,9,	3,10        # Affichage de 5 : TAILLE, Y,X,Y2,X2,...
+printSix:      .word 26,  0,7,	0,8,	0,9,	0,10,	1,6,	1,11,	2,5,	2,7,	2,11,	3,4,	3,8,	3,9,	3,10                    # Affichage de 6 : TAILLE, Y,X,Y2,X2,...
+printSept:     .word 22,  0,4,	0,10,	0,11,	1,4,	1,8,	1,9,	2,4,	2,6,	2,7,	3,4,	3,5                                 # Affichage de 7 : TAILLE, Y,X,Y2,X2,...
+printHuit:     .word 32,  0,5,	0,6,	0,8,	0,9,	0,10,	1,4,	1,7,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,9,	3,10  # Affichage de 8 : TAILLE, Y,X,Y2,X2,...
+printNeuf:     .word 26,  0,5,	0,6,	0,7,	0,11,	1,4,	1,8,	1,10,	2,4,	2,9,	3,5,	3,6,	3,7,	3,8                     # Affichage de 9 : TAILLE, Y,X,Y2,X2,...
+
+scoreMessage:   .asciiz "Votre score est : "                      # Message d'introduction du score
 endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"  # Mot gentil
 
 .text
@@ -674,6 +685,11 @@ endCFJloop2:
 ################################################################################
 
 affichageFinJeu:
+# Prologue
+addi $sp,$sp,-4
+sw $ra,0($sp)
+
+jal printScore          # On affiche en surimpression du jeu le score.
 la $a0,scoreMessage     # On charge l'adresse du message du score
 li $v0,4
 syscall                 # On affiche le message
@@ -683,4 +699,162 @@ syscall                 # On l'affiche
 la $a0,endGameMessage   # On charge l'adresse du message gentil
 li $v0,4
 syscall                 # On affiche le message
+
+# Épilogue
+lw $ra,0($sp)
+addi $sp,$sp,4
 jr $ra                  # Retour à la fonction appelante
+
+
+
+################################### printScore #################################
+# Paramètres: Aucun
+# Retour: Aucun
+# Effet de bord: Affiche le score du joueur en surimpression du jeu.
+################################################################################
+
+printScore:
+# Prologue
+addi $sp,$sp,-8
+sw $ra,0($sp)
+sw $s0,4($sp)
+
+jal resetAffichage          # On réninitialise l'affichage
+
+lw $t0,scoreJeu             # On charge le score
+li $t1,10
+blt $t0,$t1,unique_PS       # Si il est supérieur ou égal à 10 (2 chiffres)
+divu $t0,$t1                # On divise le score par 10
+mflo $a1                    # On récupère le chiffre des dizaines dans $a1
+mfhi $s0                    # On sauvegarde le chiffre des unités dans $s0
+li $a0,1                    # Mode dizaine dans $a0
+jal printVal                # On affiche le chiffre des dizaines  
+move $a1,$s0                # On met dans $a1 le chiffre des unités
+li $a0,2                    # Mode unité dans $a2
+jal printVal                # On affiche le chiffre des unités
+j end_PS                    # fin si
+
+unique_PS:                  # Sinon (1 chiffre)
+li $a0,0                    # Mode 1 chiffre dans $a0
+move $a1,$t0                # Score dans $a1
+jal printVal                # On affiche à le score
+
+end_PS:
+# Epilogue
+lw $ra,0($sp)
+lw $s0,4($sp)
+addi $sp,$sp,8
+jr $ra                      # Retour à la fonction appelante
+
+
+
+################################### printVal ###################################
+# Paramètres: $a0 mode (0 : 1 seul chiffre, 1 : dizaine, 2 : unité) sert pour
+#                 calculer le décalage.
+#             $a1 chiffre à afficher.
+# Retour: Aucun
+# Effet de bord: Affiche un chiffre en surimpression du jeu.
+################################################################################
+
+printVal:
+# Prologue
+addi $sp,$sp,-16
+sw $ra,0($sp)
+sw $s0,4($sp)
+sw $s1,8($sp)
+sw $s2,12($sp)
+
+# calcul du décalage
+beq $a0,$zero,unique_PV
+li $t0,1
+beq $a0,$t0,dizaine_PV
+li $s0,9                    # Si MODE != 0 et MODE != 1 : DÉCALAGE = DÉCALAGE_UNITÉ = 9
+j end_decalage_PV
+unique_PV:                  # Si MODE == 0 : DÉCALAGE = DÉCALAGE_UNIQUE = 6
+li $s0,6
+j end_decalage_PV
+dizaine_PV:                 # Si MODE == 1 : DÉCALAGE = DÉCALAGE_DIZAINE = 3
+li $s0,3
+end_decalage_PV:
+
+# chargement dans $s1 de l'adresse tableau contenant les points du chiffre
+bne $a1,$zero,Nzero_PV      # Si $a1 == 0 :
+la $s1,printZero            #   $s1 = printZero
+j end_chargement_PV
+Nzero_PV:
+
+li $t0,1
+bne $a1,$t0,Nun_PV          # Si $a1 == 1 :
+la $s1,printUn              #   $s1 = printUn
+j end_chargement_PV
+Nun_PV:
+
+li $t0,2
+bne $a1,$t0,Ndeux_PV        # Si $a1 == 2 :
+la $s1,printDeux            #   $s1 = printDeux
+j end_chargement_PV
+Ndeux_PV:
+
+li $t0,3
+beq $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
+la $s1,printTrois           #   $s1 = printTrois
+j end_chargement_PV
+Ntrois_PV:
+
+li $t0,4
+beq $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
+la $s1,printQuatre          #   $s1 = printQuatre
+j end_chargement_PV
+Nquatre_PV:
+
+li $t0,5
+beq $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
+la $s1,printCinq            #   $s1 = printCinq
+j end_chargement_PV
+Ncinq_PV:
+
+li $t0,6
+beq $a1,$t0,Nsix_PV         # Si $a1 == 6 :
+la $s1,printSix             #   $s1 = printSix
+j end_chargement_PV
+Nsix_PV:
+
+li $t0,7
+beq $a1,$t0,Nsept_PV        # Si $a1 == 7 :
+la $s1,printSept            #   $s1 = printSept
+j end_chargement_PV
+Nsept_PV:
+
+li $t0,8
+beq $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
+la $s1,printHuit            #   $s1 = printHuit
+j end_chargement_PV
+Nhuit_PV:
+                            # Sinon :
+la $s1,printNeuf            #   $s1 = printNeuf
+j end_chargement_PV
+end_chargement_PV:
+
+# Affichage du chiffre
+lw $s2,0($s1)               # $s2 = TAILLE du tableau (à partir des positions)
+addi $s1,$s1,4              # On se place au début des positions
+
+loop_PV:                    # Tant que $s2 > 0
+ble $s2,$zero,endloop_PV
+lw $a2,0($s1)               # On charge Y dans $a2
+add $a2,$a2,$s0             # On ajoute le décalage
+lw $a1,4($s1)               # On charge X dans $a1
+lw $a0, colors + red        # On charge la couleur dans $a0
+jal printColorAtPosition    # On affiche la case
+addi $s1,$s1,8              # On se déplace dans le tableau
+addi $s2,$s2,-2             # On décrémente la taille des 2 positions du tableau consultées
+j loop_PV
+endloop_PV:
+
+# Épilogue
+lw $ra,0($sp)
+lw $s0,4($sp)
+lw $s1,8($sp)
+lw $s2,12($sp)
+addi $sp,$sp,16
+jr $ra                      # Retour à la fonction appelante
