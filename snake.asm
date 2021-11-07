@@ -477,7 +477,7 @@ printZero:     .word 32,  0,5,	0,6,	0,7,	0,8,	0,9,	0,10,	1,4,	1,11,	2,4,	2,11,	3
 printUn:       .word 22,  0,7,	1,6,	2,5,	3,4,	3,5,	3,6,	3,7,	3,8,	3,9,	3,10,	3,11                                # Affichage de 1 : TAILLE, Y,X,Y2,X2,...
 printDeux:     .word 28,  0,5,	0,6,	0,10,	0,11,	1,4,	1,9,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,11              # Affichage de 2 : TAILLE, Y,X,Y2,X2,...
 printTrois:    .word 24,  0,4,	0,11,	1,4,	1,7,	1,11,	2,4,	2,6,	2,8,	2,10,	3,4,	3,5,	3,9                           # Affichage de 3 : TAILLE, Y,X,Y2,X2,...
-printQuatre:   .word 26,  0,6,	0,7,	1,5,	1,7,	2,4,	2,5,	2,6,	2,7,	2,8,	2,9,	2,10,	2,11,	3,7                     # Affichage de 4 : TAILLE, Y,X,Y2,X2,...
+printQuatre:   .word 26,  0,4,  0,5,  0,6,	0,7,	1,7,	2,5,	2,6,	2,7,	2,8,	2,9,	2,10,	2,11,	3,7                     # Affichage de 4 : TAILLE, Y,X,Y2,X2,...
 printCinq:     .word 30,  0,4,	0,5,	0,6,	0,7,	0,11,	1,4,	1,7,	1,11,	2,4,	2,7,	2,11,	3,4,	3,8,	3,9,	3,10        # Affichage de 5 : TAILLE, Y,X,Y2,X2,...
 printSix:      .word 26,  0,7,	0,8,	0,9,	0,10,	1,6,	1,11,	2,5,	2,7,	2,11,	3,4,	3,8,	3,9,	3,10                    # Affichage de 6 : TAILLE, Y,X,Y2,X2,...
 printSept:     .word 22,  0,4,	0,10,	0,11,	1,4,	1,8,	1,9,	2,4,	2,6,	2,7,	3,4,	3,5                                 # Affichage de 7 : TAILLE, Y,X,Y2,X2,...
@@ -797,37 +797,37 @@ j end_chargement_PV
 Ndeux_PV:
 
 li $t0,3
-beq $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
+bne $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
 la $s1,printTrois           #   $s1 = printTrois
 j end_chargement_PV
 Ntrois_PV:
 
 li $t0,4
-beq $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
+bne $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
 la $s1,printQuatre          #   $s1 = printQuatre
 j end_chargement_PV
 Nquatre_PV:
 
 li $t0,5
-beq $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
+bne $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
 la $s1,printCinq            #   $s1 = printCinq
 j end_chargement_PV
 Ncinq_PV:
 
 li $t0,6
-beq $a1,$t0,Nsix_PV         # Si $a1 == 6 :
+bne $a1,$t0,Nsix_PV         # Si $a1 == 6 :
 la $s1,printSix             #   $s1 = printSix
 j end_chargement_PV
 Nsix_PV:
 
 li $t0,7
-beq $a1,$t0,Nsept_PV        # Si $a1 == 7 :
+bne $a1,$t0,Nsept_PV        # Si $a1 == 7 :
 la $s1,printSept            #   $s1 = printSept
 j end_chargement_PV
 Nsept_PV:
 
 li $t0,8
-beq $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
+bne $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
 la $s1,printHuit            #   $s1 = printHuit
 j end_chargement_PV
 Nhuit_PV:
