@@ -542,15 +542,15 @@ add $t2,$t2,$t4           # On se place à la fin du serpent en X ($t2 += longue
 add $t3,$t3,$t4           # On se place à la fin du serpent en Y ($t3 += longueur en octets du serpent)
 
 UGSLoop:                  # On va parcourir à l'envers le serpent
-bge $t0,$t1,end_UGSLoop   # Si tout est parcouru, fin de la boucle
-lw $t4,-4($t2)            # On charge la valeur en X d'une partie du serpent
-sw $t4,0($t2)             # On l'écrit dans la case suivante
-addi $t2,$t2,-4           # On décrémente la position du serpent en X
-lw $t4,-4($t3)            # On charge la valeur en Y d'une partie du serpent
-sw $t4,0($t3)             # On l'écrit dans la case suivante
-addi $t3,$t3,-4           # On décrémente la position du serpent en Y
-addi $t0,$t0,1            # On incrémente l'index
-j UGSLoop
+  bge $t0,$t1,end_UGSLoop # Si tout est parcouru, fin de la boucle
+  lw $t4,-4($t2)          # On charge la valeur en X d'une partie du serpent
+  sw $t4,0($t2)           # On l'écrit dans la case suivante
+  addi $t2,$t2,-4         # On décrémente la position du serpent en X
+  lw $t4,-4($t3)          # On charge la valeur en Y d'une partie du serpent
+  sw $t4,0($t3)           # On l'écrit dans la case suivante
+  addi $t3,$t3,-4         # On décrémente la position du serpent en Y
+  addi $t0,$t0,1          # On incrémente l'index
+  j UGSLoop
 end_UGSLoop:
 
 # Calcul de la nouvelle position de la tête
@@ -628,54 +628,61 @@ jr $ra                      # Retour à la fonction appelante
 ################################################################################
 
 conditionFinJeu:
-    lw $t0, snakePosX		# $t0 = PositionX du serpent
-    lw $t1, snakePosY		# $t1 = PositionY du serpent
-    lw $t2, tailleGrille	# $t2 = Taille de la grille
-    bge $t0, $t2, endCFJtest 	# Test si il y un a overflow de x
-    blt $t0, $zero, endCFJtest	# Test si il y a un underflow de x
-    bge $t1, $t2, endCFJtest 	# Test si il y un a overflow de y
-    blt $t1, $zero, endCFJtest	# Test si il y a un underflow de y
+lw $t0,snakePosX		        # $t0 = PositionX du serpent
+lw $t1,snakePosY		        # $t1 = PositionY du serpent
+lw $t2,tailleGrille	        # $t2 = Taille de la grille
 
-    li $t2, -1			# $t2 = compteur de boucle
-    li $t3, 4			# $t3 = 4
-    lw $t7, numObstacles	#$t7 = nombre d'obstacles
+# Test de sortie de grille
+bge $t0,$t2,endCFJtest 	    # Test si il y un a overflow de x
+blt $t0,$zero,endCFJtest	  # Test si il y a un underflow de x
+bge $t1,$t2,endCFJtest 	    # Test si il y un a overflow de y
+blt $t1,$zero,endCFJtest	  # Test si il y a un underflow de y
+
+# Test de collision entre la tête du serpent et obstacle
+li $t2,-1			              # $t2 = compteur de boucle
+li $t3,4		                # $t3 = 4
+lw $t7,numObstacles	        # $t7 = nombre d'obstacles
 CFJloop1:
-    addi $t2, $t2, 1
-    bge $t2, $t7, endCFJloop1	# Condition fin de loop
-    mul $t4, $t3, $t2		# On stocke le décalage d'octets dans $t4
-    la $t5, obstaclesPosX	# On stocke l'adresse de obstaclesPosX dans $t5
-    add $t6, $t4, $t5		# On fait la somme des deux pour avoir la coordonnée x que l'on veut
-    lw $t6,0($t6) 	# On stocke x dans $t6
-    bne $t0, $t6, CFJloop1	# Si x du snake != x obstacle on passe a l'obstacle suivant
-    la $t5, obstaclesPosY 	# On stocke l'adresse de obstaclesPosY dans $t5
-    add $t6, $t4, $t5		# On fait la somme avec le décalage dans $t6
-    lw $t6,0($t6) 		# On stocke y dans $t6
-    beq $t1, $t6, endCFJtest	# Si y == yObstacle alors on va a la fin du test
-    j CFJloop1			# Boucle suivante
-
+  addi $t2,$t2,1            # Incrémentation du compteur
+  bge $t2,$t7,endCFJloop1	  # Condition fin de loop
+  mul $t4,$t3,$t2		        # On stocke le décalage d'octets dans $t4
+  la $t5,obstaclesPosX	    # On stocke l'adresse de obstaclesPosX dans $t5
+  add $t5,$t4,$t5		        # On additionne avec le décalage
+  lw $t6,0($t5) 	          # On stocke x dans $t6
+  bne $t0,$t6,CFJloop1	    # Si tête du serpent en x != obstacle en x on passe à l'obstacle suivant
+  la $t5,obstaclesPosY 	    # Sinon on stocke l'adresse de obstaclesPosY dans $t5
+  add $t5,$t4,$t5		        # On fait la somme avec le décalage
+  lw $t6,0($t5) 		        # On stocke y dans $t6
+  beq $t1,$t6,endCFJtest	  # Si tête du serpent en y == obstacle en y alors on va à la fin du test (collision)
+  j CFJloop1			          # Boucle suivante
 endCFJloop1:
-    li $t2, 0 			# On met notre compteur de boucle a 0
-    lw $t7, tailleSnake	# On charge la taille de notre snake dans  $t7
-CFJloop2:
-    addi $t2, $t2, 1		# Incrémentation de $t2
-    bge $t2, $t7, endCFJloop2	# Condition fin de boucle
-    mul $t4, $t3, $t2		# On stocke le décalage d'octets dans $t4
-    la $t5, snakePosX		# On stocke snakePosX dans $t5
-    add $t6, $t4, $t5		# On fait la somme des deux dans $t6
-    lw $t6,0($t6) 		# On stocke snakePosX (décalé) dans $t6
-    bne $t0, $t6, CFJloop2	# si x != snakePosX on passe a la prochain boucle
-    la $t5, snakePosY		# On stocke snakePosY dans $t5
-    add $t6, $t4, $t5		# On fait la somme avec le décalage dans $t6
-    lw $t6,0($t6) 		# On stocke snakePosY (décalé) dans $t6
-    beq $t1, $t6, endCFJtest	# Si y == snakePosY on va a la fin du test
-    j CFJloop2			# Boucle suivante
-endCFJtest:
-    li $v0, 1			# Stocke dans $v0 qu'il y a eu collision 
-    jr $ra			
 
+# Test de collision entre la tête du serpent et sa queue
+li $t2,0 			              # On met notre compteur de boucle a 0
+lw $t7,tailleSnake	        # On charge la taille de notre snake dans  $t7
+CFJloop2:
+  addi $t2,$t2,1		        # Incrémentation de $t2
+  bge $t2,$t7,endCFJloop2	  # Condition fin de boucle
+  mul $t4,$t3,$t2		        # On stocke le décalage d'octets dans $t4
+  la $t5,snakePosX		      # On stocke snakePosX dans $t5
+  add $t5,$t4,$t5		        # On additionne avec le décalage
+  lw $t6,0($t5) 		        # On stocke snakePosX (décalé) dans $t6
+  bne $t0,$t6,CFJloop2	    # si tête en x != snakePosX on passe a la prochain boucle
+  la $t5,snakePosY		      # Sinon on stocke snakePosY dans $t5
+  add $t5,$t4,$t5		        # On fait la somme avec le décalage
+  lw $t6,0($t5) 		        # On stocke snakePosY (décalé) dans $t6
+  beq $t1,$t6,endCFJtest	  # Si tête en y == snakePosY alors on va a la fin du test (collision)
+  j CFJloop2			          # Boucle suivante
+
+# Sortie de fonction collision
+endCFJtest:
+li $v0,1			              # Stocke dans $v0 qu'il y a eu collision 
+jr $ra			
+
+# Sortie de fonction sans collision
 endCFJloop2:
-    li $v0,0			# Stocke dans $v0 qu'il n'y a pas eu de collision
-    jr $ra
+li $v0,0			              # Stocke dans $v0 qu'il n'y a pas eu de collision
+jr $ra
 
 ############################### affichageFinJeu ################################
 # Paramètres: Aucun
@@ -690,21 +697,21 @@ affichageFinJeu:
 addi $sp,$sp,-4
 sw $ra,0($sp)
 
-jal printScore          # On affiche en surimpression du jeu le score.
-la $a0,scoreMessage     # On charge l'adresse du message du score
+jal printScore            # On affiche en surimpression du jeu le score.
+la $a0,scoreMessage       # On charge l'adresse du message du score
 li $v0,4
-syscall                 # On affiche le message
-lw $a0,scoreJeu         # On charge le score
+syscall                   # On affiche le message
+lw $a0,scoreJeu           # On charge le score
 li $v0,1
-syscall                 # On l'affiche
-la $a0,endGameMessage   # On charge l'adresse du message gentil
+syscall                   # On l'affiche
+la $a0,endGameMessage     # On charge l'adresse du message gentil
 li $v0,4
-syscall                 # On affiche le message
+syscall                   # On affiche le message
 
 # Épilogue
 lw $ra,0($sp)
 addi $sp,$sp,4
-jr $ra                  # Retour à la fonction appelante
+jr $ra                    # Retour à la fonction appelante
 
 
 
@@ -715,37 +722,37 @@ jr $ra                  # Retour à la fonction appelante
 ################################################################################
 
 printScore:
-# Prologue
+# Sauvegarde de registres
 addi $sp,$sp,-8
 sw $ra,0($sp)
 sw $s0,4($sp)
 
-jal resetAffichage          # On réninitialise l'affichage
+jal resetAffichage        # On réninitialise l'affichage
 
-lw $t0,scoreJeu             # On charge le score
+lw $t0,scoreJeu           # On charge le score
 li $t1,10
-blt $t0,$t1,unique_PS       # Si il est supérieur ou égal à 10 (2 chiffres)
-divu $t0,$t1                # On divise le score par 10
-mflo $a1                    # On récupère le chiffre des dizaines dans $a1
-mfhi $s0                    # On sauvegarde le chiffre des unités dans $s0
-li $a0,1                    # Mode dizaine dans $a0
-jal printVal                # On affiche le chiffre des dizaines  
-move $a1,$s0                # On met dans $a1 le chiffre des unités
-li $a0,2                    # Mode unité dans $a2
-jal printVal                # On affiche le chiffre des unités
-j end_PS                    # fin si
+blt $t0,$t1,unique_PS     # Si il est supérieur ou égal à 10 (2 chiffres)
+divu $t0,$t1              # On divise le score par 10
+mflo $a1                  # On récupère le chiffre des dizaines dans $a1
+mfhi $s0                  # On sauvegarde le chiffre des unités dans $s0
+li $a0,1                  # Mode dizaine dans $a0
+jal printVal              # On affiche le chiffre des dizaines  
+move $a1,$s0              # On met dans $a1 le chiffre des unités
+li $a0,2                  # Mode unité dans $a2
+jal printVal              # On affiche le chiffre des unités
+j end_PS                  # fin si
 
-unique_PS:                  # Sinon (1 chiffre)
-li $a0,0                    # Mode 1 chiffre dans $a0
-move $a1,$t0                # Score dans $a1
-jal printVal                # On affiche à le score
+unique_PS:                # Sinon (1 chiffre)
+li $a0,0                  # Mode 1 chiffre dans $a0
+move $a1,$t0              # Score dans $a1
+jal printVal              # On affiche à le score
 
 end_PS:
-# Epilogue
+# Récupération des registres sauvegardés
 lw $ra,0($sp)
 lw $s0,4($sp)
 addi $sp,$sp,8
-jr $ra                      # Retour à la fonction appelante
+jr $ra                    # Retour à la fonction appelante
 
 
 
@@ -758,7 +765,7 @@ jr $ra                      # Retour à la fonction appelante
 ################################################################################
 
 printVal:
-# Prologue
+# Sauvegarde de registres
 addi $sp,$sp,-16
 sw $ra,0($sp)
 sw $s0,4($sp)
@@ -769,12 +776,12 @@ sw $s2,12($sp)
 beq $a0,$zero,unique_PV
 li $t0,1
 beq $a0,$t0,dizaine_PV
-li $s0,9                    # Si MODE != 0 et MODE != 1 : DÉCALAGE = DÉCALAGE_UNITÉ = 9
+li $s0,9                    # Si MODE != 0 et MODE != 1 alors DÉCALAGE = DÉCALAGE_UNITÉ = 9
 j end_decalage_PV
-unique_PV:                  # Si MODE == 0 : DÉCALAGE = DÉCALAGE_UNIQUE = 6
+unique_PV:                  # Si MODE == 0 alors DÉCALAGE = DÉCALAGE_UNIQUE = 6
 li $s0,6
 j end_decalage_PV
-dizaine_PV:                 # Si MODE == 1 : DÉCALAGE = DÉCALAGE_DIZAINE = 3
+dizaine_PV:                 # Si MODE == 1 alors DÉCALAGE = DÉCALAGE_DIZAINE = 3
 li $s0,3
 end_decalage_PV:
 
@@ -841,18 +848,18 @@ lw $s2,0($s1)               # $s2 = TAILLE du tableau (à partir des positions)
 addi $s1,$s1,4              # On se place au début des positions
 
 loop_PV:                    # Tant que $s2 > 0
-ble $s2,$zero,endloop_PV
-lw $a2,0($s1)               # On charge Y dans $a2
-add $a2,$a2,$s0             # On ajoute le décalage
-lw $a1,4($s1)               # On charge X dans $a1
-lw $a0, colors + red        # On charge la couleur dans $a0
-jal printColorAtPosition    # On affiche la case
-addi $s1,$s1,8              # On se déplace dans le tableau
-addi $s2,$s2,-2             # On décrémente la taille des 2 positions du tableau consultées
-j loop_PV
+  ble $s2,$zero,endloop_PV
+  lw $a2,0($s1)             # On charge Y dans $a2
+  add $a2,$a2,$s0           # On ajoute le décalage
+  lw $a1,4($s1)             # On charge X dans $a1
+  lw $a0, colors + red      # On charge la couleur dans $a0
+  jal printColorAtPosition  # On affiche la case
+  addi $s1,$s1,8            # On se déplace dans le tableau
+  addi $s2,$s2,-2           # On décrémente la taille des 2 positions du tableau consultées
+  j loop_PV
 endloop_PV:
 
-# Épilogue
+# Récupération des registres sauvegardés
 lw $ra,0($sp)
 lw $s0,4($sp)
 lw $s1,8($sp)
