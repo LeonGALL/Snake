@@ -63,12 +63,12 @@ Le score est alors affiché dans la console.
   - [x] serpent.
   - [x] obstacle.
   - [x] nourriture.
-- [ ] Détecter et programmer les conditions de fin de jeu.
+- [x] Détecter et programmer les conditions de fin de jeu.
 - [x] Affichage de fin de partie avec le score.
 
 ## Options
 
-- [ ] Afficher le score graphiquement sur l’écran de jeu en fin de partie.
+- [x] Afficher le score graphiquement sur l’écran de jeu en fin de partie.
 - [ ] _"Rainbow snake"_ où chaque partie du serpent possède une couleur différente.
 - [ ] Système de niveau prédéfini en fonction du score obtenu.
 
