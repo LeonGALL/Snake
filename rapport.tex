@@ -50,11 +50,68 @@ UFR de mathématique et d'informatique
 \begin{center}
   \huge \@title
 \end{center}
+\vspace*{1cm}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %                                 RAPPORT                                 %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+Le projet d'architecture des ordinateurs était l'implémentation du célèbre jeu snake en assembleur MIPS.
+Pendant la conception, nous avons dû faire des choix.
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%                  CHOIX D'IMPLEMENTATION                 %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{Choix d'implémentations}
+
+% % % % % % % % % % % % % % % % % % % % % 
+%                  STYLE                %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Style}
+Nous avons choisi  de reprendre le style de programmation de la partie du projet fournie en amont par les professeurs.
+C'est pourquoi nous avons mis des indentations uniquement pour les boucles, et avons utilisé des virgules
+pour séparer les registres dans les instructions.
+
+Nous nous sommes conformés aux normes MIPS, en utilisant les registres sauvegardés
+dans nos fonctions appelant d'autres fonctions en interne (en les sauvegardant en amont dans le prologue puis en les restaurant dans l'épilogue).
+Dans les fonctions n'appelant pas de fonctions ou pour des informations non réutilisées après l'appel d'une fonction,
+nous avons utilisés les registres temporaires.
+
+% % % % % % % % % % % % % % % % % % % % % 
+%         STRUCTURES DE DONNEES         %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Structures de données}
+
+% % % % % % % % % % % % % % % % % % % % % 
+%               FONCTIONS               %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Fonctions}
+
+% % % % % % % % % % % % % % % % % % % % % 
+%       FONCTIONNALITES AJOUTEES        %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Fontionnalités ajoutées}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%    REPARTITION DU TRAVAIL ET DIFFICULTES RENCONTREES    %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{Répartition du travail et difficultés rencontrées}
+
+% % % % % % % % % % % % % % % % % % % % % 
+%        REPARTITION DU TRAVAIL         %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Répartition du travail}
+Nous avons choisi de nous répartir les fonctions. 
+
+% % % % % % % % % % % % % % % % % % % % % 
+%        DIFFICULTES RENCONTREES        %
+% % % % % % % % % % % % % % % % % % % % %
+\subsection{Difficultés rencontrées}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%                       OBSERVATIONS                      %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{Observations}
 %  ...
 
 \end{document}
