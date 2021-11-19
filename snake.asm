@@ -788,61 +788,76 @@ li $s0,3
 end_decalage_PV:
 
 # chargement dans $s1 de l'adresse tableau contenant les points du chiffre
-bne $a1,$zero,Nzero_PV      # Si $a1 == 0 :
+blt $a1,$zero,error_PV
+li $t0, 9
+bgt $a1,$t0,error_PV
+
+li $t0, 4
+mul $t1,$a1,$t0
+la $t0,printNumber
+add $t0,$t0,$t1
+la $s1, ($t0)
+j end_chargement_PV
+
+error_PV:
 la $s1,printZero            #   $s1 = printZero
 j end_chargement_PV
-Nzero_PV:
 
-li $t0,1
-bne $a1,$t0,Nun_PV          # Si $a1 == 1 :
-la $s1,printUn              #   $s1 = printUn
-j end_chargement_PV
-Nun_PV:
+# bne $a1,$zero,Nzero_PV      # Si $a1 == 0 :
+# la $s1,printZero            #   $s1 = printZero
+# j end_chargement_PV
+# Nzero_PV:
 
-li $t0,2
-bne $a1,$t0,Ndeux_PV        # Si $a1 == 2 :
-la $s1,printDeux            #   $s1 = printDeux
-j end_chargement_PV
-Ndeux_PV:
+# li $t0,1
+# bne $a1,$t0,Nun_PV          # Si $a1 == 1 :
+# la $s1,printUn              #   $s1 = printUn
+# j end_chargement_PV
+# Nun_PV:
 
-li $t0,3
-bne $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
-la $s1,printTrois           #   $s1 = printTrois
-j end_chargement_PV
-Ntrois_PV:
+# li $t0,2
+# bne $a1,$t0,Ndeux_PV        # Si $a1 == 2 :
+# la $s1,printDeux            #   $s1 = printDeux
+# j end_chargement_PV
+# Ndeux_PV:
 
-li $t0,4
-bne $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
-la $s1,printQuatre          #   $s1 = printQuatre
-j end_chargement_PV
-Nquatre_PV:
+# li $t0,3
+# bne $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
+# la $s1,printTrois           #   $s1 = printTrois
+# j end_chargement_PV
+# Ntrois_PV:
 
-li $t0,5
-bne $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
-la $s1,printCinq            #   $s1 = printCinq
-j end_chargement_PV
-Ncinq_PV:
+# li $t0,4
+# bne $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
+# la $s1,printQuatre          #   $s1 = printQuatre
+# j end_chargement_PV
+# Nquatre_PV:
 
-li $t0,6
-bne $a1,$t0,Nsix_PV         # Si $a1 == 6 :
-la $s1,printSix             #   $s1 = printSix
-j end_chargement_PV
-Nsix_PV:
+# li $t0,5
+# bne $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
+# la $s1,printCinq            #   $s1 = printCinq
+# j end_chargement_PV
+# Ncinq_PV:
 
-li $t0,7
-bne $a1,$t0,Nsept_PV        # Si $a1 == 7 :
-la $s1,printSept            #   $s1 = printSept
-j end_chargement_PV
-Nsept_PV:
+# li $t0,6
+# bne $a1,$t0,Nsix_PV         # Si $a1 == 6 :
+# la $s1,printSix             #   $s1 = printSix
+# j end_chargement_PV
+# Nsix_PV:
 
-li $t0,8
-bne $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
-la $s1,printHuit            #   $s1 = printHuit
-j end_chargement_PV
-Nhuit_PV:
-                            # Sinon :
-la $s1,printNeuf            #   $s1 = printNeuf
-j end_chargement_PV
+# li $t0,7
+# bne $a1,$t0,Nsept_PV        # Si $a1 == 7 :
+# la $s1,printSept            #   $s1 = printSept
+# j end_chargement_PV
+# Nsept_PV:
+
+# li $t0,8
+# bne $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
+# la $s1,printHuit            #   $s1 = printHuit
+# j end_chargement_PV
+# Nhuit_PV:
+#                             # Sinon :
+# la $s1,printNeuf            #   $s1 = printNeuf
+# j end_chargement_PV
 end_chargement_PV:
 
 # Affichage du chiffre
