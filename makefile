@@ -8,13 +8,16 @@ latex: $(LATEX)
 
 clean_latex:
 	@echo "------ CLEANING LATEX ------"
-	@rm *.aux 2> /dev/null || true
-	@rm *.log 2> /dev/null || true
-	@rm *.out 2> /dev/null || true
-	@rm *.toc 2> /dev/null || true
-	@rm *.mtc 2> /dev/null || true
-	@rm *.mtc0 2> /dev/null || true
-	@rm *.maf 2> /dev/null || true
+	@rm -f *.aux
+	@rm -f *.log
+	@rm -f *.out
+	@rm -f *.toc
+	@rm -f *.mtc
+	@rm -f *.mtc0
+	@rm -f *.maf
+	@rm -f *.fls
+	@rm -f *.fdb_latexmk
+	@rm -f *.synctex.gz
 
 dist:
 	@echo "------ MAKING THE ARCHIVE ------"
