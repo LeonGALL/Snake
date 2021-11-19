@@ -25,6 +25,6 @@ dist:
 
 clean_dist:
 	@echo "------ CLEANING THE ARCHIVE ------"
-	@rm $(ARCHIVENAME) 2> /dev/null || true
+	@rm -f $(ARCHIVENAME) 
 
 clean: clean_latex clean_dist

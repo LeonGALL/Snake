@@ -484,6 +484,8 @@ printSept:     .word 22,  0,4,	0,10,	0,11,	1,4,	1,8,	1,9,	2,4,	2,6,	2,7,	3,4,	3,
 printHuit:     .word 32,  0,5,	0,6,	0,8,	0,9,	0,10,	1,4,	1,7,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,9,	3,10  # Affichage de 8 : TAILLE, Y,X,Y2,X2,...
 printNeuf:     .word 26,  0,5,	0,6,	0,7,	0,11,	1,4,	1,8,	1,10,	2,4,	2,9,	3,5,	3,6,	3,7,	3,8                     # Affichage de 9 : TAILLE, Y,X,Y2,X2,...
 
+printNumber: .word printZero, printUn, printDeux, printTrois, printQuatre, printCinq, printSix, printSept, printHuit, printNeuf
+
 scoreMessage:   .asciiz "Votre score est : "                      # Message d'introduction du score
 endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"  # Mot gentil
 
