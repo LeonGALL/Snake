@@ -788,15 +788,15 @@ li $s0,3
 end_decalage_PV:
 
 # chargement dans $s1 de l'adresse tableau contenant les points du chiffre
-blt $a1,$zero,error_PV
+blt $a1,$zero,error_PV # gestion de l'erreur $a1<0
 li $t0, 9
-bgt $a1,$t0,error_PV
+bgt $a1,$t0,error_PV   # gestion de l'erreur $a1>9
 
 li $t0, 4
-mul $t1,$a1,$t0
-la $t0,printNumber
-add $t0,$t0,$t1
-la $s1, ($t0)
+mul $t1,$a1,$t0     # $t1 = $a1*4
+la $t0,printNumber  # $t0 = &printNumber
+add $t0,$t0,$t1     # $t0 = &printNumber + $a1*4
+lw $s1, ($t0)       # $s1 = print<number>
 j end_chargement_PV
 
 error_PV:
