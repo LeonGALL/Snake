@@ -156,22 +156,36 @@ lw $s0 tailleSnake
 sll $s0 $s0 2
 li $s1 0
 
-lw $a0 colors + greenV2
+lw $a0 colors + greenV2   # Affichage de la tête
 lw $a1 snakePosX($s1)
 lw $a2 snakePosY($s1)
 jal printColorAtPosition
 li $s1 4
 
+lw $t0 level             # On charge le niveau
+li $t1 3
+bge $t0 $t1 rainbow       # Si le niveau >= 3 alors on rentre dans le mode rainbow
+
 PSLoop:
-bge $s1 $s0 endPSLoop
+bge $s1 $s0 next_PS
   lw $a0 colors + green
   lw $a1 snakePosX($s1)
   lw $a2 snakePosY($s1)
   jal printColorAtPosition
   addu $s1 $s1 4
   j PSLoop
-endPSLoop:
 
+rainbow:                  # RAINBOW
+jal setSnakeColor           # On remplit le tableau de couleurs si nécessaire
+bge $s1 $s0 next_PS         # Tant que indice < (taille du serpent*4)
+  lw $a0 snakeColor($s1)    # Couleur : snakeColor[indice]
+  lw $a1 snakePosX($s1)     # Position en X
+  lw $a2 snakePosY($s1)     # Position en Y
+  jal printColorAtPosition  # Affichage de la couleur
+  addu $s1 $s1 4            # indice += 4
+  j rainbow
+
+next_PS:
 subu $s0 $s0 4
 lw $t0 snakePosX($s0)
 lw $t1 snakePosY($s0)
@@ -432,6 +446,7 @@ sw $v1 candy + 4
 
 mainloop:
 
+jal setLevel
 jal getInputVal
 move $a0 $v0
 jal majDirection
@@ -439,8 +454,7 @@ jal updateGameStatus
 jal conditionFinJeu
 bnez $v0 gameOver
 jal printGame
-li $a0 500
-jal sleepMillisec
+jal sleep
 j mainloop
 
 gameOver:
@@ -473,6 +487,9 @@ obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
 candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
 
+#####TEST RAINBOW
+level:         .word 0         # Niveau
+
 printZero:     .word 32,  0,5,	0,6,	0,7,	0,8,	0,9,	0,10,	1,4,	1,11,	2,4,	2,11,	3,5,	3,6,	3,7,	3,8,	3,9,	3,10  # Affichage de 0 : TAILLE, Y,X,Y2,X2,...
 printUn:       .word 22,  0,7,	1,6,	2,5,	3,4,	3,5,	3,6,	3,7,	3,8,	3,9,	3,10,	3,11                                # Affichage de 1 : TAILLE, Y,X,Y2,X2,...
 printDeux:     .word 28,  0,5,	0,6,	0,10,	0,11,	1,4,	1,9,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,11              # Affichage de 2 : TAILLE, Y,X,Y2,X2,...
@@ -484,10 +501,14 @@ printSept:     .word 22,  0,4,	0,10,	0,11,	1,4,	1,8,	1,9,	2,4,	2,6,	2,7,	3,4,	3,
 printHuit:     .word 32,  0,5,	0,6,	0,8,	0,9,	0,10,	1,4,	1,7,	1,11,	2,4,	2,8,	2,11,	3,5,	3,6,	3,7,	3,9,	3,10  # Affichage de 8 : TAILLE, Y,X,Y2,X2,...
 printNeuf:     .word 26,  0,5,	0,6,	0,7,	0,11,	1,4,	1,8,	1,10,	2,4,	2,9,	3,5,	3,6,	3,7,	3,8                     # Affichage de 9 : TAILLE, Y,X,Y2,X2,...
 
-printNumber: .word printZero, printUn, printDeux, printTrois, printQuatre, printCinq, printSix, printSept, printHuit, printNeuf
+printNumber:   .word printZero, printUn, printDeux, printTrois, printQuatre, printCinq, printSix, printSept, printHuit, printNeuf # Tableau contenant l'adresse des tableaux précédents
 
 scoreMessage:   .asciiz "Votre score est : "                      # Message d'introduction du score
 endGameMessage: .asciiz "\nQuelle performance éblouissante ;)\n"  # Mot gentil
+
+snakeColor:       .word 0 : 1024  # Couleur de chaque partie du serpent lors du rainbow snake
+snakeColorLength: .word 0         # Nombre actuel de couleurs définies
+
 
 .text
 
@@ -531,8 +552,9 @@ jr $ra
 
 updateGameStatus:
 # Sauvegarde de $ra
-addi $sp,$sp,-4
+addi $sp,$sp,-8
 sw $ra,0($sp)
+sw $s0,4($sp)
 # Décalage des positions du serpent d'une case du tableau
 li $t0,0
 lw $t1,tailleSnake        # $t1 = Taille du serpent
@@ -603,24 +625,33 @@ la $t0,candy
 sw $v0,0($t0)               # On place la position aléatoire du bonbon en X
 sw $v1,4($t0)               # On place la position aléatoire du bonbon en Y
 
-jal newRandomObjectPosition # On récupère des positions aléatoires inocupées pour y placer le nouvel obstacle
-lw $t0,numObstacles         # On charge le nombre d'obstacles
-li $t1,4
-mul $t1,$t0,$t1             
-la $t2,obstaclesPosX        # On charge l'adresse du premier obstacle en X dans $t2
-add $t2,$t2,$t1             # On se place après le dernier obstacle en X
-sw $v0,0($t2)               # On écrit la postion du dernier obstacle en X
-la $t2,obstaclesPosY        # On charge l'adresse du premier obstacle en Y dans $t2
-add $t2,$t2,$t1             # On se place après le dernier obstacle en Y
-sw $v1,0($t2)               # On écrit la postion du dernier obstacle en Y
-
-addi $t0,$t0,1              # On incrémente le nombre d'obstacles
-sw $t0,numObstacles
-
+# Obstacle(s)
+lw $s0,level                # On charge le niveau dans $s0
+beqz $s0,loopObstacles_UGS  # Si niveau != 0:
+li $s0,1                    #   $s0 = 1
+  # Boucle pour ajouter 1 obstacle en temps normal et 2 obstacles lorsque le niveau dépasse 1
+loopObstacles_UGS:
+  bltz $s0,end_UGS            # Tant que $s0 >= 0 :
+  jal newRandomObjectPosition # On récupère des positions aléatoires inocupées pour y placer le nouvel obstacle
+  lw $t0,numObstacles         # On charge le nombre d'obstacles
+  li $t1,4
+  mul $t1,$t0,$t1             
+  la $t2,obstaclesPosX        # On charge l'adresse du premier obstacle en X dans $t2
+  add $t2,$t2,$t1             # On se place après le dernier obstacle en X
+  sw $v0,0($t2)               # On écrit la postion du dernier obstacle en X
+  la $t2,obstaclesPosY        # On charge l'adresse du premier obstacle en Y dans $t2
+  add $t2,$t2,$t1             # On se place après le dernier obstacle en Y
+  sw $v1,0($t2)               # On écrit la postion du dernier obstacle en Y
+  addi $t0,$t0,1              # On incrémente le nombre d'obstacles
+  sw $t0,numObstacles
+  addi $s0,$s0,-1             # On décrémente l'index
+  j loopObstacles_UGS
 end_UGS:
+
 # Récupération de $ra
+lw $s0,4($sp)
 lw $ra,0($sp)
-addi $sp,$sp,4
+addi $sp,$sp,8
 jr $ra                      # Retour à la fonction appelante
 
 
@@ -788,76 +819,17 @@ li $s0,3
 end_decalage_PV:
 
 # chargement dans $s1 de l'adresse tableau contenant les points du chiffre
-blt $a1,$zero,error_PV # gestion de l'erreur $a1<0
+blt $a1,$zero,error_PV      # gestion de l'erreur $a1<0
 li $t0, 9
-bgt $a1,$t0,error_PV   # gestion de l'erreur $a1>9
+bgt $a1,$t0,error_PV        # gestion de l'erreur $a1>9
 
 li $t0, 4
-mul $t1,$a1,$t0     # $t1 = $a1*4
-la $t0,printNumber  # $t0 = &printNumber
-add $t0,$t0,$t1     # $t0 = &printNumber + $a1*4
-lw $s1, ($t0)       # $s1 = print<number>
+mul $t0,$a1,$t0             # $t0 = $a1*4           Calcul de l'adresse de l'adresse du tableau de chiffres correspondant
+lw $s1, printNumber($t0)    # $s1 = &print<number>  On charge l'adresse du tableau (qui est un mot dans printNumber d'où le lw)
 j end_chargement_PV
 
 error_PV:
 la $s1,printZero            #   $s1 = printZero
-j end_chargement_PV
-
-# bne $a1,$zero,Nzero_PV      # Si $a1 == 0 :
-# la $s1,printZero            #   $s1 = printZero
-# j end_chargement_PV
-# Nzero_PV:
-
-# li $t0,1
-# bne $a1,$t0,Nun_PV          # Si $a1 == 1 :
-# la $s1,printUn              #   $s1 = printUn
-# j end_chargement_PV
-# Nun_PV:
-
-# li $t0,2
-# bne $a1,$t0,Ndeux_PV        # Si $a1 == 2 :
-# la $s1,printDeux            #   $s1 = printDeux
-# j end_chargement_PV
-# Ndeux_PV:
-
-# li $t0,3
-# bne $a1,$t0,Ntrois_PV       # Si $a1 == 3 :
-# la $s1,printTrois           #   $s1 = printTrois
-# j end_chargement_PV
-# Ntrois_PV:
-
-# li $t0,4
-# bne $a1,$t0,Nquatre_PV      # Si $a1 == 4 :
-# la $s1,printQuatre          #   $s1 = printQuatre
-# j end_chargement_PV
-# Nquatre_PV:
-
-# li $t0,5
-# bne $a1,$t0,Ncinq_PV        # Si $a1 == 5 :
-# la $s1,printCinq            #   $s1 = printCinq
-# j end_chargement_PV
-# Ncinq_PV:
-
-# li $t0,6
-# bne $a1,$t0,Nsix_PV         # Si $a1 == 6 :
-# la $s1,printSix             #   $s1 = printSix
-# j end_chargement_PV
-# Nsix_PV:
-
-# li $t0,7
-# bne $a1,$t0,Nsept_PV        # Si $a1 == 7 :
-# la $s1,printSept            #   $s1 = printSept
-# j end_chargement_PV
-# Nsept_PV:
-
-# li $t0,8
-# bne $a1,$t0,Nhuit_PV        # Si $a1 == 8 :
-# la $s1,printHuit            #   $s1 = printHuit
-# j end_chargement_PV
-# Nhuit_PV:
-#                             # Sinon :
-# la $s1,printNeuf            #   $s1 = printNeuf
-# j end_chargement_PV
 end_chargement_PV:
 
 # Affichage du chiffre
@@ -883,3 +855,138 @@ lw $s1,8($sp)
 lw $s2,12($sp)
 addi $sp,$sp,16
 jr $ra                      # Retour à la fonction appelante
+
+
+
+############################## getRandomColor #################################
+# Paramètres: Aucun
+# Retour: $v0, une couleur aléatoire non présente dans le serpent
+#               comprise entre 0x00222222 et 0x00eeeeee
+################################################################################
+
+getRandomColor:
+li $a1,0x00cccccc             # Taille maximale du nombre aléatoire      
+li $v0,42
+syscall                       # Appel système nombre aléatoire
+addi $a0,$a0,0x00222222       # On ajoute au nombre aléatoire le minimum pour avoir l'intervalle visée
+
+addi $a0,$a0,16               # Afin de ne pas avoir de valeurs trop proches, simple calcul d'intervalle de différence 
+addi $t1,$a0,-16
+lw $t2,snakeColorLength       # $t2 = nombres de couleurs du serpents définies
+li $t3,4
+mul $t2,$t2,$t3               # $t2 *= 4 (Utile pour la boucle)
+li $t3,0                      # $t3 = 0, indice d'itération
+
+loop_GRC:
+  bge $t3,$t2,endloop_GRC     # Tant que indice < snakeColorLength
+  lw $t4,snakeColor($t3)      # $t4 = snakeColor[indice]
+  bgt $t4,$t0,nextGRC         # Si la couleur est au dessus de l'intervalle de conflit, c'est ok, on a plus besoin de vérifier pour cette case
+  bge $t4,$t1,getRandomColor  # Sinon si la couleur est dans l'intevalle de conflit alors on demande une autre couleur aléatoire
+  nextGRC:
+  addi $t3,$t3,4              # indice++
+  j loop_GRC
+endloop_GRC:
+move $v0,$a0
+jr $ra                        # Retour à la fonction appelante
+
+
+
+############################## setSnakeColor #################################
+# Paramètres: Aucun
+# Retour: Aucun
+# Effet de bord : Modification du tableau de couleurs du serpent
+# Description : Cette fonction vérifie qu'à chaque case du serpent soit associée
+#               une couleur, ou lui en associe une le cas échéant.
+###############################################################################
+
+setSnakeColor:
+# Sauvegarde de registres
+addi $sp,$sp,-16
+sw $ra,0($sp)
+sw $s0,4($sp)
+sw $s1,8($sp)
+sw $s2,12($sp)
+
+lw $s0,tailleSnake          # On charge la taille du serpent dans $s0
+lw $s1,snakeColorLength     # On charge le nombre de couleurs du serpent dans $s1
+beq $s0,$s1,endSSC          # Si elles sont égales nous pouvons quitter cette fonction
+
+li $t0,4
+mul $s2,$s1,$t0             # Sinon, indice = première case libre
+
+# La première case est utile uniquement pour la comparaison. Elle sera toujours peinte en vert.
+bnez $s2,loop_SSC           # Si la première case est libre
+lw $t0,colors + greenV2    # Alors on stocke la couleur de la tête en première case
+sw $t0,snakeColor
+addi $s2,$s2,4              # Et on incrémente l'indice
+
+loop_SSC:
+  ble $s0,$s1,endloop_SSC   # Tant que taille du serpent > nombre de couleurs
+  jal getRandomColor        # On demande une couleur aléatoire
+  sw $v0,snakeColor($s2)    # On la place dans le tableau
+  addi $s1,$s1,1            # On incrémente le nombre de couleurs
+  addi $s2,$s2,4            # indice += 4
+endloop_SSC:
+sw $s1,snakeColorLength     # On place le nombre de couleurs dans son emplacement mémoire
+
+endSSC:
+# Récupération des registres sauvegardés
+lw $ra,0($sp)
+lw $s0,4($sp)
+lw $s1,8($sp)
+lw $s2,12($sp)
+addi $sp,$sp,16
+jr $ra                      # Retour à la fonction appelante
+
+
+
+############################## setLevel ###################################
+# Paramètres: Aucun
+# Retour: Aucun
+# Effet de bord : Modification du niveau
+# Description : Cette fonction vérifie que le score correspond bien au niveau 
+#               et le cas échéant, modifie le niveau.
+###########################################################################
+
+setLevel:
+lw $t0,scoreJeu         # On charge le score dans $t0
+lw $t1,level            # On charge le niveau dans $t1
+li $t2,5                # $t2 = 5
+
+divu $t0,$t2            # On divise le score par 5
+mflo $t2                # On récupère le résultat dans $t2
+beq $t1,$t2,end_SN      # Si le niveau est correct, il n'y a rien à changer
+sw $t2,level            # Sinon on le met à jour
+
+end_SN:
+jr $ra                  # Retour à la fonction appelante
+
+
+
+################################# sleep ###################################
+# Paramètres: Aucun
+# Retour: Aucun
+# Description : Passe un certain temps dans sleepMillisec suivant le niveau
+###########################################################################
+
+sleep:
+# Enregistrement de $ra dans la pile
+addi $sp,$sp,-4
+sw $ra,0($sp)
+
+lw $t0,level            # On charge le niveau dans $t0
+li $t1,6
+ble $t0,$t1,next_S      # Si niveau > 8:
+li $t0,6                #   $t0 = 8
+
+next_S:
+li $t1,50
+mul $t1,$t0,$t1         # $t1 = $t0 * 50
+li $t2,500
+subu $a0,$t2,$t1        # $a0 = 500 - $t1
+jal sleepMillisec       # On appelle la fonction avec en argument le temps à patienter
+
+# Récupération de $ra
+lw $ra,0($sp)
+addi $sp,$sp,4
+jr $ra                  # Retour à la fonction appelante

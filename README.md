@@ -17,7 +17,7 @@ Ce projet est à rendre avant le **5 décembre 2021 à 23h59**.
 
 ## Exécution
 
-L'émulateur Mars se lance à partir de l’archive _javaMars4\_5.jar_ grâce à la commande `java -jar Mars4_5.jar`. Pour lancer votre programme, vous devez charger votre fichier snake.asm. Ensuite, vous devez activer l’affichage et la capture des entrées claviers en allant dans l’onglet Tools pour lancer _Bitmap Display & Keyboard_ ainsi que _Display MMIO Simulator_. Dans l’outil _BitMap Display_, vous devez sélectionner une fenêtre carrée 256x256 et une taille de pixel 16x16. Ne pas oublier de connecter les deux widgets à votre code MIPS. Finalement, il ne vous reste plus qu’à lancer l’exécution votre programme et interagir grâce aux entrées claviers.
+L'émulateur Mars se lance à partir de l’archive _javaMars4_5.jar_ grâce à la commande `java -jar Mars4_5.jar`. Pour lancer votre programme, vous devez charger votre fichier snake.asm. Ensuite, vous devez activer l’affichage et la capture des entrées claviers en allant dans l’onglet Tools pour lancer _Bitmap Display & Keyboard_ ainsi que _Display MMIO Simulator_. Dans l’outil _BitMap Display_, vous devez sélectionner une fenêtre carrée 256x256 et une taille de pixel 16x16. Ne pas oublier de connecter les deux widgets à votre code MIPS. Finalement, il ne vous reste plus qu’à lancer l’exécution votre programme et interagir grâce aux entrées claviers.
 
 ## Déroulement du jeu
 
@@ -69,8 +69,8 @@ Le score est alors affiché dans la console.
 ## Options
 
 - [x] Afficher le score graphiquement sur l’écran de jeu en fin de partie.
-- [ ] _"Rainbow snake"_ où chaque partie du serpent possède une couleur différente.
-- [ ] Système de niveau prédéfini en fonction du score obtenu.
+- [x] _"Rainbow snake"_ où chaque partie du serpent possède une couleur différente.
+- [x] Système de niveau prédéfini en fonction du score obtenu.
 
 ## Travail à rendre
 
