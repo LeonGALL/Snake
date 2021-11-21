@@ -661,60 +661,60 @@ jr $ra                      # Retour à la fonction appelante
 ################################################################################
 
 conditionFinJeu:
-lw $t0,snakePosX		        # $t0 = PositionX du serpent
-lw $t1,snakePosY		        # $t1 = PositionY du serpent
-lw $t2,tailleGrille	        # $t2 = Taille de la grille
+lw $t0,snakePosX            # $t0 = PositionX du serpent
+lw $t1,snakePosY            # $t1 = PositionY du serpent
+lw $t2,tailleGrille         # $t2 = Taille de la grille
 
 # Test de sortie de grille
-bge $t0,$t2,endCFJtest 	    # Test si il y un a overflow de x
-blt $t0,$zero,endCFJtest	  # Test si il y a un underflow de x
-bge $t1,$t2,endCFJtest 	    # Test si il y un a overflow de y
-blt $t1,$zero,endCFJtest	  # Test si il y a un underflow de y
+bge $t0,$t2,endCFJtest      # Test si il y un a overflow de x
+blt $t0,$zero,endCFJtest    # Test si il y a un underflow de x
+bge $t1,$t2,endCFJtest      # Test si il y un a overflow de y
+blt $t1,$zero,endCFJtest    # Test si il y a un underflow de y
 
 # Test de collision entre la tête du serpent et obstacle
-li $t2,-1			              # $t2 = compteur de boucle
-li $t3,4		                # $t3 = 4
-lw $t7,numObstacles	        # $t7 = nombre d'obstacles
+li $t2,-1                   # $t2 = compteur de boucle
+li $t3,4                    # $t3 = 4
+lw $t7,numObstacles         # $t7 = nombre d'obstacles
 CFJloop1:
   addi $t2,$t2,1            # Incrémentation du compteur
-  bge $t2,$t7,endCFJloop1	  # Condition fin de loop
-  mul $t4,$t3,$t2		        # On stocke le décalage d'octets dans $t4
-  la $t5,obstaclesPosX	    # On stocke l'adresse de obstaclesPosX dans $t5
-  add $t5,$t4,$t5		        # On additionne avec le décalage
-  lw $t6,0($t5) 	          # On stocke x dans $t6
-  bne $t0,$t6,CFJloop1	    # Si tête du serpent en x != obstacle en x on passe à l'obstacle suivant
-  la $t5,obstaclesPosY 	    # Sinon on stocke l'adresse de obstaclesPosY dans $t5
-  add $t5,$t4,$t5		        # On fait la somme avec le décalage
-  lw $t6,0($t5) 		        # On stocke y dans $t6
-  beq $t1,$t6,endCFJtest	  # Si tête du serpent en y == obstacle en y alors on va à la fin du test (collision)
-  j CFJloop1			          # Boucle suivante
+  bge $t2,$t7,endCFJloop1   # Condition fin de loop
+  mul $t4,$t3,$t2           # On stocke le décalage d'octets dans $t4
+  la $t5,obstaclesPosX      # On stocke l'adresse de obstaclesPosX dans $t5
+  add $t5,$t4,$t5           # On additionne avec le décalage
+  lw $t6,0($t5)             # On stocke x dans $t6
+  bne $t0,$t6,CFJloop1      # Si tête du serpent en x != obstacle en x on passe à l'obstacle suivant
+  la $t5,obstaclesPosY      # Sinon on stocke l'adresse de obstaclesPosY dans $t5
+  add $t5,$t4,$t5           # On fait la somme avec le décalage
+  lw $t6,0($t5)             # On stocke y dans $t6
+  beq $t1,$t6,endCFJtest    # Si tête du serpent en y == obstacle en y alors on va à la fin du test (collision)
+  j CFJloop1                # Boucle suivante
 endCFJloop1:
 
 # Test de collision entre la tête du serpent et sa queue
-li $t2,0 			              # On met notre compteur de boucle a 0
-lw $t7,tailleSnake	        # On charge la taille de notre snake dans  $t7
+li $t2,0                    # On met notre compteur de boucle a 0
+lw $t7,tailleSnake          # On charge la taille de notre snake dans  $t7
 CFJloop2:
-  addi $t2,$t2,1		        # Incrémentation de $t2
-  bge $t2,$t7,endCFJloop2	  # Condition fin de boucle
-  mul $t4,$t3,$t2		        # On stocke le décalage d'octets dans $t4
-  la $t5,snakePosX		      # On stocke snakePosX dans $t5
-  add $t5,$t4,$t5		        # On additionne avec le décalage
-  lw $t6,0($t5) 		        # On stocke snakePosX (décalé) dans $t6
-  bne $t0,$t6,CFJloop2	    # si tête en x != snakePosX on passe a la prochain boucle
-  la $t5,snakePosY		      # Sinon on stocke snakePosY dans $t5
-  add $t5,$t4,$t5		        # On fait la somme avec le décalage
-  lw $t6,0($t5) 		        # On stocke snakePosY (décalé) dans $t6
-  beq $t1,$t6,endCFJtest	  # Si tête en y == snakePosY alors on va a la fin du test (collision)
-  j CFJloop2			          # Boucle suivante
+  addi $t2,$t2,1            # Incrémentation de $t2
+  bge $t2,$t7,endCFJloop2   # Condition fin de boucle
+  mul $t4,$t3,$t2           # On stocke le décalage d'octets dans $t4
+  la $t5,snakePosX          # On stocke snakePosX dans $t5
+  add $t5,$t4,$t5           # On additionne avec le décalage
+  lw $t6,0($t5)             # On stocke snakePosX (décalé) dans $t6
+  bne $t0,$t6,CFJloop2      # si tête en x != snakePosX on passe a la prochain boucle
+  la $t5,snakePosY          # Sinon on stocke snakePosY dans $t5
+  add $t5,$t4,$t5           # On fait la somme avec le décalage
+  lw $t6,0($t5)             # On stocke snakePosY (décalé) dans $t6
+  beq $t1,$t6,endCFJtest    # Si tête en y == snakePosY alors on va a la fin du test (collision)
+  j CFJloop2                # Boucle suivante
 
 # Sortie de fonction collision
 endCFJtest:
-li $v0,1			              # Stocke dans $v0 qu'il y a eu collision 
+li $v0,1                    # Stocke dans $v0 qu'il y a eu collision 
 jr $ra			
 
 # Sortie de fonction sans collision
 endCFJloop2:
-li $v0,0			              # Stocke dans $v0 qu'il n'y a pas eu de collision
+li $v0,0                    # Stocke dans $v0 qu'il n'y a pas eu de collision
 jr $ra
 
 ############################### affichageFinJeu ################################
@@ -916,7 +916,7 @@ mul $s2,$s1,$t0             # Sinon, indice = première case libre
 
 # La première case est utile uniquement pour la comparaison. Elle sera toujours peinte en vert.
 bnez $s2,loop_SSC           # Si la première case est libre
-lw $t0,colors + greenV2    # Alors on stocke la couleur de la tête en première case
+lw $t0,colors + greenV2     # Alors on stocke la couleur de la tête en première case
 sw $t0,snakeColor
 addi $s2,$s2,4              # Et on incrémente l'indice
 
