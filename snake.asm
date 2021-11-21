@@ -870,7 +870,7 @@ li $v0,42
 syscall                       # Appel système nombre aléatoire
 addi $a0,$a0,0x00222222       # On ajoute au nombre aléatoire le minimum pour avoir l'intervalle visée
 
-addi $a0,$a0,16               # Afin de ne pas avoir de valeurs trop proches, simple calcul d'intervalle de différence 
+addi $t0,$a0,16               # Afin de ne pas avoir de valeurs trop proches, simple calcul d'intervalle de différence 
 addi $t1,$a0,-16
 lw $t2,snakeColorLength       # $t2 = nombres de couleurs du serpents définies
 li $t3,4
