@@ -156,15 +156,16 @@ lw $s0 tailleSnake
 sll $s0 $s0 2
 li $s1 0
 
+lw $t0 level             # On charge le niveau
+li $t1 3
+bge $t0 $t1 rainbow       # Si le niveau >= 3 alors on rentre dans le mode rainbow
+
+
 lw $a0 colors + greenV2   # Affichage de la tête
 lw $a1 snakePosX($s1)
 lw $a2 snakePosY($s1)
 jal printColorAtPosition
 li $s1 4
-
-lw $t0 level             # On charge le niveau
-li $t1 3
-bge $t0 $t1 rainbow       # Si le niveau >= 3 alors on rentre dans le mode rainbow
 
 PSLoop:
 bge $s1 $s0 next_PS
@@ -914,7 +915,6 @@ beq $s0,$s1,endSSC          # Si elles sont égales nous pouvons quitter cette f
 li $t0,4
 mul $s2,$s1,$t0             # Sinon, indice = première case libre
 
-# La première case est utile uniquement pour la comparaison. Elle sera toujours peinte en vert.
 bnez $s2,loop_SSC           # Si la première case est libre
 lw $t0,colors + greenV2     # Alors on stocke la couleur de la tête en première case
 sw $t0,snakeColor
