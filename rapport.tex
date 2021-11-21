@@ -70,7 +70,7 @@ Pendant la conception, nous avons dû faire des choix.
 \subsection{Style}
 Nous avons choisi  de reprendre le style de programmation de la partie du projet fournie en amont par les professeurs.
 C'est pourquoi nous avons mis des indentations uniquement pour les boucles, mais nous avons préféré utiliser des virgules
-pour séparer les registres dans les instructions.
+pour séparer les registres dans les instructions, par souci de clarté.
 
 Nous nous sommes conformés aux normes MIPS, en utilisant les registres sauvegardés
 dans nos fonctions appelant d'autres fonctions en interne (en les sauvegardant en amont dans le prologue puis en les restaurant dans l'épilogue).
@@ -101,17 +101,25 @@ nous avons utilisés les registres temporaires.
 %        REPARTITION DU TRAVAIL         %
 % % % % % % % % % % % % % % % % % % % % %
 \subsection{Répartition du travail}
-Nous avons choisi de nous répartir les fonctions. 
+Nous avons choisi de nous répartir les fonctions, afin de pouvoir travailler en parallèle, chacun sur ses fonctions en utilisant GitLab pour se partager nos versions.
+Avant chaque fonction, nous nous sommes mis d'accord sur ce qu'il fallait faire et comment nous allions le faire. Donc la conception des fonctions s'est faite à deux, mais
+leur implémentation s'est faite chacun de son côté. Bien évidemment, nous avons débuggé nos fonctions ensemble lorsque nous avions des problèmes que nous n'arrivions pas à résoudre
+seuls.
 
 % % % % % % % % % % % % % % % % % % % % % 
 %        DIFFICULTES RENCONTREES        %
 % % % % % % % % % % % % % % % % % % % % %
 \subsection{Difficultés rencontrées}
+Nous n'avons pas rencontré de difficultés particulières lors de la réalisation de ce projet. Programmer en assembleur demande de la rigueur, et nous avons apprécié le défi imposé.
+Pour palier à la difficulté de relecture du code assembleur, nous avons commenté les instructions, ce qui nous a permi de comprendre le code de l'autre, et notre code à nous aussi parfois\dots
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %                       OBSERVATIONS                      %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Observations}
-%  ...
+Nous avons observé que l'axe des abscisses et celles des ordonnées étaient inversées. Il nous a donc fallu adapter nos fonctions et structures de données en conséquence.
+Mais cela n'a en aucun cas perturbé notre réalisation.
+
+Nous avous apprécié ce projet qui fût très enrichissant. Il nous a entre-autre permi d'élargir notre connaissance du langage MIPS.
 
 \end{document}
