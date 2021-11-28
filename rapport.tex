@@ -69,7 +69,7 @@ Le projet d'architecture des ordinateurs avait pour sujet l'implémentation du c
 % % % % % % % % % % % % % % % % % % % % %
 \subsection{Style}
 Nous avons choisi  de reprendre le style de programmation de la partie du projet fournie en amont par les professeurs.
-C'est pourquoi nous avons mis des indentations uniquement pour les boucles, mais nous avons préféré utiliser des virgules
+C'est pourquoi nous avons mis des indentations uniquement pour les boucles. Toutefois, nous avons préféré utiliser des virgules
 pour séparer les registres dans les instructions, par souci de clarté.
 
 Nous nous sommes conformés aux normes MIPS, en utilisant les registres sauvegardés
@@ -122,7 +122,7 @@ chiffre correspondant. Cette structure de données permet l'économie d'un nombr
 
 On réinitialise le dernier affichage graphique. Ensuite, nous regardons si le score est un chiffre ou un nombre et s'il s'agit d'un chiffre nous l'affichons au centre, 
 et sinon nous récupérons le chiffre des dizaines et des unités pour les afficher l'un à côté de l'autre de façon centrée. 
-Le score sera toujours inférieur à 100 (donc composé au maximum de deux chiffres), puisqu'il est techniquement pas possible de dépasser le score 86 en suivant
+Le score sera toujours inférieur à 100 (donc composé au maximum de deux chiffres), puisqu'il est techniquement impossible de dépasser le score 86 en suivant
 notre système d'évolution, du fait du nombre limité de pixels.
 Pour afficher graphiquement un chiffre, on accède à son tableau de pixels et on affiche successivement chaque pixel en rouge.
 
@@ -131,7 +131,7 @@ Nous avons également mis en place un système de niveau, qui évolue suivant le
 le niveau 0 est composé des scores 0 à 4 (inclus).
 
 Pour que la difficulté augmente avec le niveau, nous avons fait en sorte d'ajouter deux obstacles chaque fois qu'un bonbon est mangé, dès le niveau 1. De plus, la vitesse 
-du jeu augmente également de la façon suivante : Le temps d'attente entre deux évolutions est par défaut 500 millisecondes, et à chaque niveau, ce temps d'attente diminue 
+du jeu augmente également de la façon suivante : le temps d'attente entre deux évolutions est par défaut 500 millisecondes, et à chaque niveau, ce temps d'attente diminue 
 suivant la formule :
 \[sleep = 500-50\times niveau\]
 Si le niveau dépasse 8 (ce qui est extrêmement peu probable), ce temps cesse de diminuer et se comporte comme si le niveau était égal à 8.
@@ -167,8 +167,8 @@ updateGameStatus, d’affichage graphique et du niveau.
 \subsection{Difficultés rencontrées}
 Nous n'avons pas rencontré de difficultés particulières lors de la réalisation de ce projet. Programmer en assembleur demande de la rigueur, 
 et nous avons apprécié le défi imposé.
-Pour palier à la difficulté de relecture du code assembleur, nous avons commenté les instructions, ce qui nous a permi de comprendre le code de l'autre, 
-et notre code à nous aussi parfois\dots
+Pour palier à la difficulté de relecture du code assembleur, nous avons commenté les instructions, ce qui nous a permi de bien comprendre le code de l'autre, 
+ainsi que le notre de temps en temps\dots
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %                       OBSERVATIONS                      %
@@ -177,7 +177,7 @@ et notre code à nous aussi parfois\dots
 Nous avons observé que l'axe des abscisses et celui des ordonnées étaient inversées. Il nous a donc fallu adapter nos fonctions et structures de données en conséquence.
 Mais cela n'a en aucun cas perturbé notre réalisation.
 
-Nous avons apprécié ce projet qui fût très enrichissant. Il nous a entre autres permis d'élargir notre connaissance du langage MIPS.
+Nous avons apprécié ce projet qui fût très enrichissant. Il nous a entre autres permis d'élargir nos connaissances en assembleur.
 
 \end{document}
 
