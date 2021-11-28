@@ -57,8 +57,7 @@ UFR de mathématique et d'informatique
 %                                 RAPPORT                                 %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-Le projet d'architecture des ordinateurs était l'implémentation du célèbre jeu snake en assembleur MIPS.
-Pendant la conception, nous avons dû faire des choix.
+Le projet d'architecture des ordinateurs avait pour sujet l'implémentation du célèbre jeu snake en assembleur MIPS.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %                  CHOIX D'IMPLÉMENTATION                 %
@@ -88,17 +87,20 @@ nous avons utilisé les registres temporaires.
 % % % % % % % % % % % % % % % % % % % % %
 \subsection{Fonctions}
 
+Nous avons eu à implémenter les fonctions suivantes.
+
 \subsubsection*{Mise à jour de la direction}
-La fonction majDirection utilise la direction donnée par getInputVal, puis vérifie que le serpent ne fait pas de demi-tour à l'aide de la formule : 
-\[(direction+2)\mod{4} \neq direction\]
+La fonction majDirection utilise la direction donnée par getInputVal, puis vérifie que le serpent ne fait pas de demi-tour à l'aide de la formule suivante,
+qui économise de nombreuses conditionnelles.
+\[ direction \neq (direction+2)\mod{4} \]
 Si il ne fait pas demi-tour, la direction du serpent est mise à jour.
 
 \subsubsection*{Évolution du jeu}
-La fonction updateGameStatus fait avancer le serpent, en décalant son tableau de positions d'une case et en modifiant la tête.
+La fonction updateGameStatus fait avancer le serpent, en décalant ses positions d'une case dans son tableau de positions et en modifiant l'emplacement de la tête.
 Ensuite, elle compare la position de la tête du serpent avec celle du bonbon. Dans le cas où elles sont à la même position, 
-le serpent grandit d'une case (en décalant les positions d'une case et la dernière case n'est plus lue mais est toujours accessible 
-donc il suffit d'augmenter la taille du serpent pour la lire). Un nouvel emplacement aléatoire pour le bonbon est alors trouvé et un obstacle (ou deux suivant le niveau) 
-est également ajouté.
+le serpent grandit d'une case (ceci est rendu possible par le fait que lors de l'avancement du serpent, sa dernière position est également déplacée,
+malgré le fait qu'elle ne soit plus lue. Pour la lire à nouveau, il suffit simplement d'incrémenter la taille du serpent).
+Un nouvel emplacement aléatoire pour le bonbon est alors trouvé et un obstacle (ou deux suivant le niveau) est également ajouté.
 
 \subsubsection*{Conditions de fin du jeu}
 La fonction conditionFinJeu vérifie après chaque évolution du jeu que le serpent ne rentre ni dans lui-même, ni dans un obstacle ou encore que le serpent ne sorte pas de 
@@ -114,29 +116,32 @@ La fonction affichageFinJeu affiche graphiquement le score du joueur et le réé
 
 \subsubsection*{Affichage graphique du score}
 Pour structurer nos données, nous avons créé un tableau statique par chiffre, contenant les pixels de celui-ci. Il est agencé de la façon suivante : la première case de ce 
-tableau contient sa taille, et le reste contient la position en ordonnée suivie de la position en abscisse de chaque pixel.
+tableau contient sa taille, et la suite est composée de la position en ordonnée suivie de la position en abscisse de chaque pixel.
 Un autre tableau statique contient les labels de chaque chiffre, afin qu'en accédant à la bonne case de ce tableau, on puisse accéder à l'adresse du tableau de pixels du 
-chiffre correspondant.
+chiffre correspondant. Cette structure de données permet l'économie d'un nombre important de conditionnelles, au prix d'une lisibilité légèrement réduite.
 
 On réinitialise le dernier affichage graphique. Ensuite, nous regardons si le score est un chiffre ou un nombre et s'il s'agit d'un chiffre nous l'affichons au centre, 
-et sinon nous récupérons le chiffre des dizaines et des unités pour les afficher l'un à côté de l'autre de façon centrée.
-Pour afficher graphiquement un chiffre, on accède à son tableau de pixels et on affiche chaque pixel en rouge.
+et sinon nous récupérons le chiffre des dizaines et des unités pour les afficher l'un à côté de l'autre de façon centrée. 
+Le score sera toujours inférieur à 100 (donc composé au maximum de deux chiffres), puisqu'il est techniquement pas possible de dépasser le score 86 en suivant
+notre système d'évolution, du fait du nombre limité de pixels.
+Pour afficher graphiquement un chiffre, on accède à son tableau de pixels et on affiche successivement chaque pixel en rouge.
 
 \subsubsection*{Système de niveau}
 Nous avons également mis en place un système de niveau, qui évolue suivant le score. Chaque fois que le score dépasse un multiple de cinq, le niveau augmente. Par exemple, 
 le niveau 0 est composé des scores 0 à 4 (inclus).
 
 Pour que la difficulté augmente avec le niveau, nous avons fait en sorte d'ajouter deux obstacles chaque fois qu'un bonbon est mangé, dès le niveau 1. De plus, la vitesse 
-du jeu augmente également de la façon suivante : Le temps d'attente entre deux évolutions est de base 500 millisecondes, et à chaque niveau, ce temps d'attente diminue 
+du jeu augmente également de la façon suivante : Le temps d'attente entre deux évolutions est par défaut 500 millisecondes, et à chaque niveau, ce temps d'attente diminue 
 suivant la formule :
 \[sleep = 500-50\times niveau\]
-Si le niveau dépasse 8, ce qui est extrêmement peu probable, ce temps cesse de diminuer et se comporte comme si le niveau était égal à 8.
+Si le niveau dépasse 8 (ce qui est extrêmement peu probable), ce temps cesse de diminuer et se comporte comme si le niveau était égal à 8.
 
 Dès que le niveau 3 est atteint, le serpent s'affiche en mode arc-en-ciel.
 
 \subsubsection*{Rainbow snake}
-Nous avons créé un tableau statique qui est rempli au fur et à mesure de l'agrandissement du serpent par des couleurs aléatoires de code hexadécimal compris entre 
-0x222222 et 0xEEEEEE. Lors du tirage de ces couleurs, on vérifie qu'elle n'est pas trop similaire à une autre couleur du serpent.
+Nous avons créé un tableau statique qui est rempli à partir du niveau 3 suivant la taille du serpent, par des couleurs aléatoires dont le code hexadécimal est compris entre 
+0x222222 et 0xEEEEEE, afin d'obtenir une couleur ni trop sombre, ni trop claire. Lors du tirage d'une couleur, on vérifie qu'elle n'est pas trop similaire à la couleur d'une 
+autre partie du serpent.
 Lors de l'affichage, les couleurs de chaque partie du serpent sont récupérées dans ce tableau, et la couleur de la tête reste inchangée afin de ne pas perturber le joueur.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -153,7 +158,7 @@ Avant chaque fonction, nous nous sommes mis d'accord sur ce qu'il fallait faire 
 leur implantation s'est faite chacun de son côté. Bien évidemment, nous avons débuggé nos fonctions ensemble lorsque nous avions des problèmes que nous n'arrivions pas 
 à résoudre seuls.
 
-Mathias a programmé les fonctions conditionFinDeJeu, affichageFinJeu et de la fonctionnalité arc-en-ciel tandis que Léon a implémenté les fonction majDirection, 
+Mathias a programmé les fonctions conditionFinDeJeu, affichageFinJeu et de la fonctionnalité arc-en-ciel tandis que Léon a implémenté les fonctions majDirection, 
 updateGameStatus, d’affichage graphique et du niveau.
 
 % % % % % % % % % % % % % % % % % % % % %
